@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      async function f(url) {
+        const response = await fetch(url);
+        let html = await response.text();
+        console.log(html);
+      }
+
+      f("https://bootcamp.fjord.jp/welcome");
+    </script>
+  </body>
+</html>
