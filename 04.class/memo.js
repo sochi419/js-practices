@@ -1,32 +1,21 @@
 const argv = require("minimist")(process.argv.slice(2));
 const fs = require("fs");
+const { Select } = require("enquirer");
 
 class List {
-  constructor() {
+  printFiles() {
     fs.readdir(".", (err, files) => {
-      files.forEach((file) => {
-        var text = fs.readFileSync(file, "utf8");
-        var lines = text.toString().split("\r\n");
-        var firstLine = lines[0].split(/\n/)[0];
-
-        console.log(firstLine);
-      });
+      printFirstLine(files);
     });
   }
 }
 
 class Reference {
-  constructor() {
-    const { Select } = require("enquirer");
-
+  printFile() {
     fs.readdir(".", (err, files) => {
-      files.forEach((file) => {
-        var text = fs.readFileSync(file, "utf8");
-        var lines = text.toString().split("\r\n");
-        var firstLine = lines[0].split(/\n/)[0];
-        console.log(firstLine);
-      });
-      let prompt = new Select({
+      printFirstLine(files);
+
+      const prompt = new Select({
         name: "file",
         message: "Choose file",
         choices: files,
@@ -34,24 +23,17 @@ class Reference {
 
       prompt
         .run()
-        .then((answer) => console.log(fs.readFileSync(answer, "utf8")))
-        .catch(console.error);
+        .then((answer) => console.log(fs.readFileSync(answer, "utf8")));
     });
   }
 }
 
 class Delete {
-  constructor() {
-    const { Select } = require("enquirer");
-
+  deleteFile() {
     fs.readdir(".", (err, files) => {
-      files.forEach((file) => {
-        var text = fs.readFileSync(file, "utf8");
-        var lines = text.toString().split("\r\n");
-        var firstLine = lines[0].split(/\n/)[0];
-        console.log(firstLine);
-      });
-      var prompt = new Select({
+      printFirstLine(files);
+
+      const prompt = new Select({
         name: "file",
         message: "Choose file",
         choices: files,
@@ -63,7 +45,7 @@ class Delete {
 }
 
 class Add {
-  constructor() {
+  addFile() {
     let input = require("fs").readFileSync("/dev/stdin", "utf8");
     console.log(input);
 
@@ -71,18 +53,28 @@ class Add {
   }
 }
 
+const printFirstLine = (files) => {
+  files.forEach((file) => {
+    const text = fs.readFileSync(file, "utf8");
+    const lines = text.toString().split("\r\n");
+    const firstLine = lines[0].split(/\n/)[0];
+
+    console.log(firstLine);
+  });
+};
+
 if (argv.l) {
-  new List();
+  new List().printFiles();
 }
 
 if (argv.r) {
-  new Reference();
+  new Reference().printFile();
 }
 
 if (argv.d) {
-  new Delete();
+  new Delete().deleteFile();
 }
 
 if (argv.a) {
-  new Add();
+  new Add().addFile();
 }
