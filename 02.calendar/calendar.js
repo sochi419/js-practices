@@ -6,8 +6,7 @@ const calendar = (year, month) => {
     month = today.getMonth() + 1;
   }
 
-  const yearAndMonth = `      ${month}月${year}年`;
-  console.log(yearAndMonth);
+  console.log(`      ${month}月${year}年`);
   console.log("日 月 火 水 木 金 土");
 
   // 月の初日の曜日を数字(0~6)で表す変数を定義
@@ -29,7 +28,7 @@ const calendar = (year, month) => {
     }
 
     // 土曜日で改行するif文を記載
-    let judgeSaturday = firstDayOfWeek + dayOfMonth;
+    const judgeSaturday = firstDayOfWeek + dayOfMonth;
     if (judgeSaturday % 7 == 0) {
       process.stdout.write("\n");
     }
