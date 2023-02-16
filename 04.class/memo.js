@@ -39,14 +39,17 @@ class Delete {
         choices: files,
       });
 
-      prompt.run().then((answer) => fs.unlink(answer, (error) => {}));
+      prompt.run().then((answer) => fs.unlink(answer, () => {}));
     });
   }
 }
 
 class Add {
   addFile() {
-    let input = require("fs").readFileSync("/dev/stdin", "utf8");
+    let input = require("fs")
+      .readFileSync("/dev/stdin", "utf8")
+      .replace("\n", "");
+
     console.log(input);
 
     fs.writeFileSync(`${input}.txt`, input);
