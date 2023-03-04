@@ -5,7 +5,8 @@ const { Select } = require("enquirer");
 class List {
   printFiles() {
     fs.readdir(".", (err, files) => {
-      printFirstLine(files);
+      let memo = deleteDir(files);
+      printFirstLine(memo);
     });
   }
 }
@@ -13,12 +14,13 @@ class List {
 class Reference {
   printFile() {
     fs.readdir(".", (err, files) => {
-      printFirstLine(files);
+      let memo = deleteDir(files);
+      printFirstLine(memo);
 
       const prompt = new Select({
         name: "file",
         message: "Choose file",
-        choices: files,
+        choices: memo,
       });
 
       prompt
@@ -64,6 +66,19 @@ const printFirstLine = (files) => {
 
     console.log(firstLine);
   });
+};
+
+const deleteDir = (files) => {
+  let memo = [];
+  for (let file of files) {
+    const path = file;
+    const stats = fs.statSync(path);
+
+    if (stats.isFile()) {
+      memo.push(file);
+    }
+  }
+  return memo;
 };
 
 if (argv.l) {
