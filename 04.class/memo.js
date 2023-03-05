@@ -48,13 +48,11 @@ class Delete {
 
 class Add {
   addFile() {
-    let input = require("fs")
-      .readFileSync("/dev/stdin", "utf8")
-      .replace("\n", "");
+    const input = require("fs").readFileSync("/dev/stdin", "utf8");
+    const lines = input.toString().split("\r\n");
+    const firstLine = lines[0].split(/\n/)[0];
 
-    console.log(input);
-
-    fs.writeFileSync(`${input}.txt`, input);
+    fs.writeFileSync(`${firstLine}.txt`, input);
   }
 }
 
