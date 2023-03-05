@@ -13,7 +13,24 @@ class List {
 
 class Reference {
   printFile() {
-    fs.readdir(".", (err, files) => {
+    fs.readdir(".", async (err, files) => {
+      let memo = deleteDir(files);
+
+      const prompt = new Select({
+        name: "file",
+        message: "Choose file",
+        choices: memo,
+      });
+
+      let memoTitle = await prompt.run();
+      console.log(fs.readFileSync(memoTitle, "utf8"));
+    });
+  }
+}
+
+class Delete {
+  deleteFile() {
+    fs.readdir(".", async (err, files) => {
       let memo = deleteDir(files);
       printFirstLine(memo);
 
@@ -23,25 +40,8 @@ class Reference {
         choices: memo,
       });
 
-      prompt
-        .run()
-        .then((answer) => console.log(fs.readFileSync(answer, "utf8")));
-    });
-  }
-}
-
-class Delete {
-  deleteFile() {
-    fs.readdir(".", (err, files) => {
-      printFirstLine(files);
-
-      const prompt = new Select({
-        name: "file",
-        message: "Choose file",
-        choices: files,
-      });
-
-      prompt.run().then((answer) => fs.unlink(answer, () => {}));
+      let memoTitle = await prompt.run();
+      fs.unlink(memoTitle, () => {});
     });
   }
 }
