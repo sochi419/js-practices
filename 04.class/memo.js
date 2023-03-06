@@ -5,7 +5,7 @@ const { Select } = require("enquirer");
 class List {
   printFiles() {
     fs.readdir(".", (err, files) => {
-      let memo = deleteDir(files);
+      const memo = pickMemo(files);
       printFirstLine(memo);
     });
   }
@@ -14,7 +14,7 @@ class List {
 class Reference {
   printFile() {
     fs.readdir(".", async (err, files) => {
-      let memo = deleteDir(files);
+      const memo = pickMemo(files);
 
       const prompt = new Select({
         name: "file",
@@ -22,7 +22,7 @@ class Reference {
         choices: memo,
       });
 
-      let memoTitle = await prompt.run();
+      const memoTitle = await prompt.run();
       console.log(fs.readFileSync(memoTitle, "utf8"));
     });
   }
@@ -31,7 +31,7 @@ class Reference {
 class Delete {
   deleteFile() {
     fs.readdir(".", async (err, files) => {
-      let memo = deleteDir(files);
+      const memo = pickMemo(files);
       printFirstLine(memo);
 
       const prompt = new Select({
@@ -40,7 +40,7 @@ class Delete {
         choices: memo,
       });
 
-      let memoTitle = await prompt.run();
+      const memoTitle = await prompt.run();
       fs.unlink(memoTitle, () => {});
     });
   }
@@ -66,14 +66,14 @@ const printFirstLine = (files) => {
   });
 };
 
-const deleteDir = (files) => {
-  let memo = [];
+const pickMemo = (files) => {
+  const memo = [];
   for (let file of files) {
-    const path = file;
-    const stats = fs.statSync(path);
-
-    if (stats.isFile()) {
-      memo.push(file);
+    if (fs.statSync(file).isFile()) {
+      const fileName = file.split(".");
+      if (fileName[1] === "txt") {
+        memo.push(file);
+      }
     }
   }
   return memo;
