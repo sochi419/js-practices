@@ -51,7 +51,7 @@ class Add {
     const input = fs.readFileSync("/dev/stdin", "utf8");
     const lines = input.toString().split("\r\n");
     const firstLine = lines[0].split(/\n/)[0];
-    const meta_datas = [
+    const metaDatas = [
       ".",
       "?",
       "*",
@@ -66,8 +66,8 @@ class Add {
     ];
     let metaCount = 0;
 
-    meta_datas.forEach((meta_data) => {
-      if (firstLine.indexOf(meta_data) !== -1) {
+    metaDatas.forEach((metaData) => {
+      if (firstLine.indexOf(metaData) !== -1) {
         metaCount += 1;
       }
     });
