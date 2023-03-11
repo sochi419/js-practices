@@ -48,11 +48,35 @@ class Delete {
 
 class Add {
   addFile() {
-    const input = require("fs").readFileSync("/dev/stdin", "utf8");
+    const input = fs.readFileSync("/dev/stdin", "utf8");
     const lines = input.toString().split("\r\n");
     const firstLine = lines[0].split(/\n/)[0];
+    const meta_datas = [
+      ".",
+      "?",
+      "*",
+      "/",
+      "+",
+      "$",
+      "-",
+      "|",
+      "{ or }",
+      "( or ) ",
+      "[ or ] ",
+    ];
+    let metaCount = 0;
 
-    fs.writeFileSync(`${firstLine}.txt`, input);
+    meta_datas.forEach((meta_data) => {
+      if (firstLine.indexOf(meta_data) !== -1) {
+        metaCount += 1;
+      }
+    });
+
+    if (metaCount >= 1) {
+      console.log("使用できない文字が含まれています。");
+    } else {
+      fs.writeFileSync(`${firstLine}.txt`, input);
+    }
   }
 }
 
@@ -70,8 +94,7 @@ const pickMemo = (files) => {
   const memo = [];
   for (let file of files) {
     if (fs.statSync(file).isFile()) {
-      const fileName = file.split(".");
-      if (fileName[1] === "txt") {
+      if (file.search(/.txt/) !== -1) {
         memo.push(file);
       }
     }
@@ -81,16 +104,10 @@ const pickMemo = (files) => {
 
 if (argv.l) {
   new List().printFiles();
-}
-
-if (argv.r) {
+} else if (argv.r) {
   new Reference().printFile();
-}
-
-if (argv.d) {
+} else if (argv.d) {
   new Delete().deleteFile();
-}
-
-if (argv.a) {
+} else {
   new Add().addFile();
 }
