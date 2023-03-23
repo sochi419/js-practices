@@ -49,34 +49,25 @@ class Delete {
 class Add {
   addFile() {
     const input = fs.readFileSync("/dev/stdin", "utf8");
-    const lines = input.toString().split("\r\n");
-    const firstLine = lines[0].split(/\n/)[0];
-    const metaDatas = [
-      ".",
-      "?",
-      "*",
-      "/",
-      "+",
-      "$",
-      "-",
-      "|",
-      "{ or }",
-      "( or ) ",
-      "[ or ] ",
-    ];
-    let metaCount = 0;
 
-    metaDatas.forEach((metaData) => {
-      if (firstLine.indexOf(metaData) !== -1) {
-        metaCount += 1;
+    fs.readdir(".", (err, files) => {
+      const memos = pickMemo(files);
+      const indexs = [];
+
+      for (let memo of memos) {
+        if (memo.search(/memo_/) !== -1) {
+          indexs.push(Number(memo.split(/memo_/)[1].split(/.txt/)[0])); // ディレクトリ内のメモの連番を,indexsに入れる処理
+        }
+      }
+
+      const maxIndex = Math.max.apply(null, indexs);
+
+      if (indexs.length === 0) {
+        fs.writeFileSync(`memo_1.txt`, input);
+      } else {
+        fs.writeFileSync(`memo_${maxIndex + 1}.txt`, input);
       }
     });
-
-    if (metaCount >= 1) {
-      console.log("使用できない文字が含まれています。");
-    } else {
-      fs.writeFileSync(`${firstLine}.txt`, input);
-    }
   }
 }
 
