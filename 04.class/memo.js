@@ -2,74 +2,66 @@ const argv = require("minimist")(process.argv.slice(2));
 const fs = require("fs");
 const { Select } = require("enquirer");
 
-class List {
-  printFiles() {
-    fs.readdir(".", (err, files) => {
-      const memo = pickMemo(files);
-      printFirstLine(memo);
-    });
-  }
+function listFiles() {
+  fs.readdir(".", (err, files) => {
+    const memo = pickMemo(files);
+    printFirstLine(memo);
+  });
 }
 
-class Reference {
-  printFile() {
-    fs.readdir(".", async (err, files) => {
-      const memo = pickMemo(files);
+function referFile() {
+  fs.readdir(".", async (err, files) => {
+    const memo = pickMemo(files);
 
-      const prompt = new Select({
-        name: "file",
-        message: "Choose file",
-        choices: memo,
-      });
-
-      const memoTitle = await prompt.run();
-      console.log(fs.readFileSync(memoTitle, "utf8"));
+    const prompt = new Select({
+      name: "file",
+      message: "Choose file",
+      choices: memo,
     });
-  }
+
+    const memoTitle = await prompt.run();
+    console.log(fs.readFileSync(memoTitle, "utf8"));
+  });
 }
 
-class Delete {
-  deleteFile() {
-    fs.readdir(".", async (err, files) => {
-      const memo = pickMemo(files);
-      printFirstLine(memo);
+function deleteFile() {
+  fs.readdir(".", async (err, files) => {
+    const memo = pickMemo(files);
+    printFirstLine(memo);
 
-      const prompt = new Select({
-        name: "file",
-        message: "Choose file",
-        choices: memo,
-      });
-
-      const memoTitle = await prompt.run();
-      fs.unlink(memoTitle, () => {});
+    const prompt = new Select({
+      name: "file",
+      message: "Choose file",
+      choices: memo,
     });
-  }
+
+    const memoTitle = await prompt.run();
+    fs.unlink(memoTitle, () => {});
+  });
 }
 
-class Add {
-  addFile() {
-    const input = fs.readFileSync("/dev/stdin", "utf8");
+function addFile() {
+  const input = fs.readFileSync("/dev/stdin", "utf8");
 
-    fs.readdir(".", (err, files) => {
-      const memos = pickMemo(files);
-      const indexs = [];
+  fs.readdir(".", (err, files) => {
+    const memos = pickMemo(files);
+    const indexs = [];
 
-      function getIndex() {
-        for (let memo of memos) {
-          indexs.push(Number(memo.split(/memo_/)[1].split(/.txt/)[0]));
-        }
-        return indexs;
+    function getIndex() {
+      for (let memo of memos) {
+        indexs.push(Number(memo.split(/memo_/)[1].split(/.txt/)[0]));
       }
+      return indexs;
+    }
 
-      const maxIndex = Math.max.apply(null, getIndex());
+    const maxIndex = Math.max.apply(null, getIndex());
 
-      if (getIndex().length === 0) {
-        fs.writeFileSync(`memo_1.txt`, input);
-      } else {
-        fs.writeFileSync(`memo_${maxIndex + 1}.txt`, input);
-      }
-    });
-  }
+    if (getIndex().length === 0) {
+      fs.writeFileSync(`memo_1.txt`, input);
+    } else {
+      fs.writeFileSync(`memo_${maxIndex + 1}.txt`, input);
+    }
+  });
 }
 
 const printFirstLine = (files) => {
@@ -95,11 +87,11 @@ const pickMemo = (files) => {
 };
 
 if (argv.l) {
-  new List().printFiles();
+  listFiles();
 } else if (argv.r) {
-  new Reference().printFile();
+  referFile();
 } else if (argv.d) {
-  new Delete().deleteFile();
+  deleteFile();
 } else {
-  new Add().addFile();
+  addFile();
 }
