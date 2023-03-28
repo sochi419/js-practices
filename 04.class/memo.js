@@ -49,7 +49,7 @@ function addFile() {
 
     function getIndex() {
       for (let memo of memos) {
-        indexs.push(Number(memo.split(/memo_/)[1].split(/.txt/)[0]));
+        indexs.push(memo.replace(/memo_|.txt/g, ""));
       }
       return indexs;
     }
