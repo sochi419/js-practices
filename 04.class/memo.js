@@ -83,11 +83,11 @@ const printFirstLine = (files) => {
 
 const pickMemo = (files) => {
   const memo = [];
+  const MEMO_FILE_REGEXP = /^memo_\d+\.txt$/;
+
   for (let file of files) {
-    if (fs.statSync(file).isFile()) {
-      if (file.search(/.txt/) !== -1) {
-        memo.push(file);
-      }
+    if (fs.statSync(file).isFile() && MEMO_FILE_REGEXP.test(file)) {
+      memo.push(file);
     }
   }
   return memo;
