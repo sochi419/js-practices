@@ -54,15 +54,16 @@ class Add {
       const memos = pickMemo(files);
       const indexs = [];
 
-      for (let memo of memos) {
-        if (memo.search(/memo_/) !== -1) {
-          indexs.push(Number(memo.split(/memo_/)[1].split(/.txt/)[0])); // ディレクトリ内のメモの連番を,indexsに入れる処理
+      function getIndex() {
+        for (let memo of memos) {
+          indexs.push(Number(memo.split(/memo_/)[1].split(/.txt/)[0]));
         }
+        return indexs;
       }
 
-      const maxIndex = Math.max.apply(null, indexs);
+      const maxIndex = Math.max.apply(null, getIndex());
 
-      if (indexs.length === 0) {
+      if (getIndex().length === 0) {
         fs.writeFileSync(`memo_1.txt`, input);
       } else {
         fs.writeFileSync(`memo_${maxIndex + 1}.txt`, input);
