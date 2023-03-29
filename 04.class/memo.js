@@ -43,25 +43,13 @@ function deleteFile() {
 function addFile() {
   const input = fs.readFileSync("/dev/stdin", "utf8");
 
-  fs.readdir(".", (err, files) => {
-    const memos = pickMemo(files);
-    const indexs = [];
+  const maxIndexJSON = fs.readFileSync("./max-index.json", "utf-8");
+  const maxIndexValue = JSON.parse(maxIndexJSON).max_index;
+  const newMaxIndex = { max_index: maxIndexValue + 1 };
+  const newMaxIndexJSON = JSON.stringify(newMaxIndex);
 
-    function getIndex() {
-      for (let memo of memos) {
-        indexs.push(memo.replace(/memo_|.txt/g, ""));
-      }
-      return indexs;
-    }
-
-    const maxIndex = Math.max.apply(null, getIndex());
-
-    if (getIndex().length === 0) {
-      fs.writeFileSync(`memo_1.txt`, input);
-    } else {
-      fs.writeFileSync(`memo_${maxIndex + 1}.txt`, input);
-    }
-  });
+  fs.writeFileSync(`./max-index.json`, newMaxIndexJSON);
+  fs.writeFileSync(`memo_${newMaxIndex.max_index}.txt`, input);
 }
 
 const printFirstLine = (files) => {
