@@ -2,54 +2,56 @@ const argv = require("minimist")(process.argv.slice(2));
 const fs = require("fs");
 const { Select } = require("enquirer");
 
-function listFiles() {
-  fs.readdir(".", (err, files) => {
-    const memo = pickMemo(files);
-    printFirstLine(memo);
-  });
-}
-
-function referFile() {
-  fs.readdir(".", async (err, files) => {
-    const memo = pickMemo(files);
-
-    const prompt = new Select({
-      name: "file",
-      message: "Choose file",
-      choices: memo,
+class Memo {
+  listFiles() {
+    fs.readdir(".", (err, files) => {
+      const memo = pickMemo(files);
+      printFirstLine(memo);
     });
+  }
 
-    const memoTitle = await prompt.run();
-    console.log(fs.readFileSync(memoTitle, "utf8"));
-  });
-}
+  referFile() {
+    fs.readdir(".", async (err, files) => {
+      const memo = pickMemo(files);
 
-function deleteFile() {
-  fs.readdir(".", async (err, files) => {
-    const memo = pickMemo(files);
-    printFirstLine(memo);
+      const prompt = new Select({
+        name: "file",
+        message: "Choose file",
+        choices: memo,
+      });
 
-    const prompt = new Select({
-      name: "file",
-      message: "Choose file",
-      choices: memo,
+      const memoTitle = await prompt.run();
+      console.log(fs.readFileSync(memoTitle, "utf8"));
     });
+  }
 
-    const memoTitle = await prompt.run();
-    fs.unlink(memoTitle, () => {});
-  });
-}
+  deleteFile() {
+    fs.readdir(".", async (err, files) => {
+      const memo = pickMemo(files);
+      printFirstLine(memo);
 
-function addFile() {
-  const input = fs.readFileSync("/dev/stdin", "utf8");
+      const prompt = new Select({
+        name: "file",
+        message: "Choose file",
+        choices: memo,
+      });
 
-  const maxIndexJSON = fs.readFileSync("./max-index.json", "utf-8");
-  const maxIndexValue = JSON.parse(maxIndexJSON).max_index;
-  const newMaxIndex = { max_index: maxIndexValue + 1 };
-  const newMaxIndexJSON = JSON.stringify(newMaxIndex);
+      const memoTitle = await prompt.run();
+      fs.unlink(memoTitle, () => {});
+    });
+  }
 
-  fs.writeFileSync(`./max-index.json`, newMaxIndexJSON);
-  fs.writeFileSync(`memo_${newMaxIndex.max_index}.txt`, input);
+  addFile() {
+    const input = fs.readFileSync("/dev/stdin", "utf8");
+
+    const maxIndexJSON = fs.readFileSync("./max-index.json", "utf-8");
+    const maxIndexValue = JSON.parse(maxIndexJSON).max_index;
+    const newMaxIndex = { max_index: maxIndexValue + 1 };
+    const newMaxIndexJSON = JSON.stringify(newMaxIndex);
+
+    fs.writeFileSync(`./max-index.json`, newMaxIndexJSON);
+    fs.writeFileSync(`memo_${newMaxIndex.max_index}.txt`, input);
+  }
 }
 
 const printFirstLine = (files) => {
@@ -75,11 +77,11 @@ const pickMemo = (files) => {
 };
 
 if (argv.l) {
-  listFiles();
+  new Memo().listFiles();
 } else if (argv.r) {
-  referFile();
+  new Memo().referFile();
 } else if (argv.d) {
-  deleteFile();
+  new Memo().deleteFile();
 } else {
-  addFile();
+  new Memo().addFile();
 }
