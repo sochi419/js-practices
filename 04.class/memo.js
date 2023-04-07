@@ -3,41 +3,48 @@ const fs = require("fs");
 const { Select } = require("enquirer");
 
 class Memo {
-  constructor(files) {
-    const memo = [];
-    const MEMO_FILE_REGEXP = /^memo_\d+\.txt$/;
+  constructor() {
+    this.MEMO_FILE_REGEXP = /^memo_\d+\.txt$/;
+  }
 
+  getMemos() {
+    const memo = [];
+    const files = fs.readdirSync(".");
     for (let file of files) {
-      if (fs.statSync(file).isFile() && MEMO_FILE_REGEXP.test(file)) {
+      if (fs.statSync(file).isFile() && this.MEMO_FILE_REGEXP.test(file)) {
         memo.push(file);
       }
     }
-    this.memo = memo;
+    return memo;
   }
 }
 
-class FirstLine {
+class MemoContent {
   constructor(file) {
-    const text = fs.readFileSync(file, "utf8");
-    const lines = text.toString().split("\r\n");
-    const firstLine = lines[0].split(/\n/)[0];
+    this.text = fs.readFileSync(file, "utf8");
+  }
 
-    this.firstLine = firstLine;
+  getFirstLine() {
+    const lines = this.text.split(/\r?\n/);
+    return lines[0];
   }
 }
 
-if (argv.l) {
-  fs.readdir(".", (err, files) => {
-    const memos = new Memo(files)["memo"];
+class MemoApp {
+  constructor() {
+    this.memo = new Memo();
+  }
 
-    memos.forEach((memo) => {
-      const firstLine = new FirstLine(memo)["firstLine"];
+  listMemos() {
+    const memos = this.memo.getMemos();
+    for (let memo of memos) {
+      const firstLine = new MemoContent(memo).getFirstLine();
       console.log(firstLine);
-    });
-  });
-} else if (argv.r) {
-  fs.readdir(".", async (err, files) => {
-    const memos = new Memo(files)["memo"];
+    }
+  }
+
+  readMemo() {
+    const memos = this.memo.getMemos();
 
     const prompt = new Select({
       name: "file",
@@ -45,16 +52,17 @@ if (argv.l) {
       choices: memos,
     });
 
-    const memoTitle = await prompt.run();
-    console.log(fs.readFileSync(memoTitle, "utf8"));
-  });
-} else if (argv.d) {
-  fs.readdir(".", async (err, files) => {
-    const memos = new Memo(files)["memo"];
-    memos.forEach((memo) => {
-      const firstLine = new FirstLine(memo)["firstLine"];
-      console.log(firstLine);
+    prompt.run().then(async (memoTitle) => {
+      console.log(fs.readFileSync(memoTitle, "utf8"));
     });
+  }
+
+  deleteMemo() {
+    const memos = this.memo.getMemos();
+    for (let memo of memos) {
+      const firstLine = new MemoContent(memo).getFirstLine();
+      console.log(firstLine);
+    }
 
     const prompt = new Select({
       name: "file",
@@ -62,17 +70,35 @@ if (argv.l) {
       choices: memos,
     });
 
-    const memoTitle = await prompt.run();
-    fs.unlink(memoTitle, () => {});
-  });
-} else {
-  const input = fs.readFileSync("/dev/stdin", "utf8");
+    prompt.run().then(async (memoTitle) => {
+      fs.unlink(memoTitle, () => {});
+    });
+  }
 
-  const maxIndexJSON = fs.readFileSync("./max-index.json", "utf-8");
-  const maxIndexValue = JSON.parse(maxIndexJSON).max_index;
-  const newMaxIndex = { max_index: maxIndexValue + 1 };
-  const newMaxIndexJSON = JSON.stringify(newMaxIndex);
+  addMemo() {
+    const input = fs.readFileSync("/dev/stdin", "utf8");
 
-  fs.writeFileSync(`./max-index.json`, newMaxIndexJSON);
-  fs.writeFileSync(`memo_${newMaxIndex.max_index}.txt`, input);
+    const maxIndexJSON = fs.readFileSync("./max-index.json", "utf-8");
+    const maxIndexValue = JSON.parse(maxIndexJSON).max_index;
+    const newMaxIndex = { max_index: maxIndexValue + 1 };
+    const newMaxIndexJSON = JSON.stringify(newMaxIndex);
+
+    fs.writeFileSync(`./max-index.json`, newMaxIndexJSON);
+    fs.writeFileSync(`memo_${newMaxIndex.max_index}.txt`, input);
+  }
+
+  runCommand() {
+    if (argv.l) {
+      this.listMemos();
+    } else if (argv.r) {
+      this.readMemo();
+    } else if (argv.d) {
+      this.deleteMemo();
+    } else {
+      this.addMemo();
+    }
+  }
 }
+
+const memoApp = new MemoApp();
+memoApp.runCommand();
