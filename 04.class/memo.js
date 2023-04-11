@@ -8,14 +8,14 @@ class Memo {
   }
 
   getMemos() {
-    const memo = [];
+    const memos = [];
     const files = fs.readdirSync(".");
     for (let file of files) {
       if (fs.statSync(file).isFile() && this.MEMO_FILE_REGEXP.test(file)) {
-        memo.push(file);
+        memos.push(file);
       }
     }
-    return memo;
+    return memos;
   }
 }
 
