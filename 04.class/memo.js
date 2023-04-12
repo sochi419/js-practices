@@ -2,16 +2,14 @@ const argv = require("minimist")(process.argv.slice(2));
 const fs = require("fs");
 const { Select } = require("enquirer");
 
-class Memo {
-  constructor() {
-    this.MEMO_FILE_REGEXP = /^memo_\d+\.txt$/;
-  }
+const MEMO_FILE_REGEXP = /^memo_\d+\.txt$/;
 
+class Memo {
   getMemos() {
     const memos = [];
     const files = fs.readdirSync(".");
     for (let file of files) {
-      if (fs.statSync(file).isFile() && this.MEMO_FILE_REGEXP.test(file)) {
+      if (fs.statSync(file).isFile() && MEMO_FILE_REGEXP.test(file)) {
         memos.push(file);
       }
     }
