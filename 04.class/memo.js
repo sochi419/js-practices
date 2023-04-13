@@ -4,7 +4,7 @@ const { Select } = require("enquirer");
 
 const MEMO_FILE_REGEXP = /^memo_\d+\.txt$/;
 
-class Memo {
+class MemoRepository {
   getMemos() {
     const memos = [];
     const files = fs.readdirSync(".");
@@ -17,7 +17,7 @@ class Memo {
   }
 }
 
-class MemoContent {
+class Memo {
   constructor(file) {
     this.text = fs.readFileSync(file, "utf8");
   }
@@ -30,13 +30,13 @@ class MemoContent {
 
 class MemoApp {
   constructor() {
-    this.memo = new Memo();
+    this.memo = new MemoRepository();
   }
 
   listMemos() {
     const memos = this.memo.getMemos();
     for (let memo of memos) {
-      const firstLine = new MemoContent(memo).getFirstLine();
+      const firstLine = new Memo(memo).getFirstLine();
       console.log(firstLine);
     }
   }
@@ -58,7 +58,7 @@ class MemoApp {
   deleteMemo() {
     const memos = this.memo.getMemos();
     for (let memo of memos) {
-      const firstLine = new MemoContent(memo).getFirstLine();
+      const firstLine = new Memo(memo).getFirstLine();
       console.log(firstLine);
     }
 
